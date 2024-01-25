@@ -40,9 +40,9 @@
                                     </div>
                                 </div>
                                 <div class="row mb-2">
-                                    {{-- <div class="col-md-6">
+                                    <div class="col-md-6">
                                         <label for="role">Role<spna class="text-danger">*</spna></label>
-                                        <select class="form-control roles" id="role" name="role">
+                                        <select class="form-control roles" id="role" name="role" disabled>
                                             <option></option>
 
                                             @foreach ($roles as $role)
@@ -53,20 +53,21 @@
                                                 </option>
                                             @endforeach
                                         </select>
-                                    </div> --}}
+                                    </div>
                                     <div class="col-md-6">
                                         <label for="name">Name<spna class="text-danger">*</spna></label>
                                         <input type="text" name="name" id="name" class="form-control"
                                             placeholder="Enter Name" value="{{ $data->name }}">
                                     </div>
+                                </div>
+                                <div class="row  mb-2">
                                     <div class="col-md-6">
                                         <label for="mobile_no">Mobile Number<spna class="text-danger">*</spna></label>
                                         <input type="text" maxlength="10" name="mobile_no" id="mobile_no"
                                             class="form-control" placeholder="Enter Mobile Number"
                                             value="{{ $data->mobile_no }}">
                                     </div>
-                                </div>
-                                <div class="row  mb-2">
+
                                     <div class="col-md-6">
                                         <label for="expiry_date">Expiry Date</label>
                                         <input type="text" name="expiry_date" id="expiry_date" class="form-control"
@@ -117,7 +118,7 @@
                                             <div class="row">
                                                 @foreach ($permissions as $model => $modelPermissions)
                                                     @role('client|user')
-                                                        @if ($model != 'Client')
+                                                        @if ($model != 'Client' && $model != 'User')
                                                             <div class="card w-25">
                                                                 <div class="card-header">
                                                                     <div class="icheck-primary d-inline ms-1">
@@ -364,6 +365,18 @@
                 $('#pass_con_btn').addClass('fa-solid fa-lock');
             }
         });
+
+        var selectedRole = $(".roles").val();
+
+        // Show/hide permission models based on the selected role
+        if (selectedRole == 2) {
+            $('[data-model="Client"], [data-model="User"]').closest('.card').hide();
+        } else if (selectedRole == 3) {
+            $('[data-model="Client"]').closest('.card').hide();
+        } else {
+            $('[data-model="Client"], [data-model="User"]').closest('.card').show();
+        }
+
     });
 </script>
 @endsection

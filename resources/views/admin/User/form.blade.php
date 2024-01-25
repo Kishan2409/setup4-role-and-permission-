@@ -115,7 +115,7 @@
                                             <div class="row">
                                                 @foreach ($permissions as $model => $modelPermissions)
                                                     @role('client|user')
-                                                        @if ($model != 'Client')
+                                                        @if ($model != 'Client' && $model != 'User')
                                                             <div class="card w-25">
                                                                 <div class="card-header">
                                                                     <div class="icheck-primary d-inline ms-1">
@@ -145,7 +145,7 @@
                                                     @else
                                                         <div class="card w-25">
                                                             <div class="card-header">
-                                                                <div class="icheck-primary d-inline ms-1">
+                                                                <div class="icheck-primary d-inline ms-1 model">
                                                                     <input type="checkbox" class="checkModel"
                                                                         id="content{{ $model }}"
                                                                         data-model="{{ $model }}">
@@ -357,6 +357,22 @@
                     input.attr("type", "password");
                     $('#pass_con_btn').removeClass('fa-solid fa-unlock-keyhole');
                     $('#pass_con_btn').addClass('fa-solid fa-lock');
+                }
+            });
+
+            $(".roles").change(function() {
+                var selectedRole = $(this).val();
+
+                $('.chk').prop('checked', false);
+                $('.checkModel').prop('checked', false);
+
+                $('[data-model="Client"], [data-model="User"]').closest('.card').hide();
+
+                // Show/hide permission models based on the selected role
+                if (selectedRole == 1) {
+                    $('[data-model="Client"], [data-model="User"]').closest('.card').show();
+                } else if (selectedRole == 2) {
+                    $('[data-model="Client"], [data-model="User"]').closest('.card').hide();
                 }
             });
         });

@@ -77,7 +77,7 @@
                                             <div class="row">
                                                 @foreach ($permissions as $model => $modelPermissions)
                                                     @role('client|user')
-                                                        @if ($model != 'Client')
+                                                        @if ($model != 'Client' && $model != 'User')
                                                             <div class="card w-25">
                                                                 <div class="card-header">
                                                                     <div class="icheck-primary d-inline ms-1">
@@ -208,6 +208,17 @@
             allowClear: true,
             theme: 'bootstrap4'
         });
+
+        var selectedRole = $(".roles").val();
+
+        // Show/hide permission models based on the selected role
+        if (selectedRole == 2) {
+            $('[data-model="Client"], [data-model="User"]').closest('.card').hide();
+        } else if (selectedRole == 3) {
+            $('[data-model="Client"]').closest('.card').hide();
+        } else {
+            $('[data-model="Client"], [data-model="User"]').closest('.card').show();
+        }
     });
 </script>
 @endsection

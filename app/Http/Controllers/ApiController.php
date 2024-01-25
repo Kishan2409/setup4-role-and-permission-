@@ -41,11 +41,29 @@ class ApiController extends Controller
             }
             //check client expiry date
             if ($client->expiry_date >= $today || $client->expiry_date == null) {
+                $responce = [];
+                $responce['id'] = $client->id;
+                $responce['user_id'] = $client->user_id;
+                $responce['client_id'] = $client->client_id;
+                $responce['name'] = $client->name;
+                $responce['mobile_no'] = $client->mobile_no;
+                $responce['logo'] = url('public/storage/clientlogo/' . $client->logo);
+                $responce['email'] = $client->email;
+                $responce['address'] = $client->address;
+                $responce['expiry_date'] = $client->expiry_date;
+                $responce['number_of_users'] = $client->number_of_users;
+                $responce['login_type'] = $client->login_type;
+                $responce['added_by'] = $client->added_by;
+                $responce['updated_by'] = $client->updated_by;
+                $responce['deleted_at'] = $client->deleted_at;
+                $responce['created_at'] = $client->created_at;
+                $responce['updated_at'] = $client->updated_at;
+
                 return response()->json([
                     "success" => 1,
                     "message" => "success",
                     "is_valid" => 1,
-                    "client" => $client
+                    "client" => $responce
                 ]);
             } else {
                 //client plan expire
@@ -97,6 +115,7 @@ class ApiController extends Controller
                 if ($checkdata->expiry_date >= $today || $checkdata->expiry_date == null) {
 
                     $credentials = $request->only('mobile_no', 'password');
+
                     //check credentials
                     if (Auth::attempt($credentials)) {
 
@@ -117,25 +136,8 @@ class ApiController extends Controller
                         $responce['created_at'] = $user->created_at;
                         $responce['updated_at'] = $user->updated_at;
 
-                        if ($client && $client->login_type == 1) {
-
-                            //login first second time
-                            if ($user->remember_token == 1) {
-                                $user->remember_token = 0;
-                                $user->save();
-                                $responce['remember_token'] = 0;
-                            }
-
-                            //login first time
-                            if ($user->remember_token === null) {
-                                $user->remember_token = 1;
-                                $user->save();
-                                $responce['remember_token'] = 1;
-                            }
-                        } else {
-                            $user->remember_token = 1;
-                            $user->save();
-                            $responce['remember_token'] = 1;
+                        if (Auth::check() && $client->login_type == 1) {
+                            $user->tokens()->delete();
                         }
 
                         //generate token
@@ -146,14 +148,17 @@ class ApiController extends Controller
                             "message" => "success",
                             "user" => $responce,
                         ]);
-                    } else {
-                        //user not found
+                    }
+
+                    //user not found
+                    if (!Auth::attempt($credentials)) {
                         return response()->json([
                             'success' => 0,
                             'message' => 'User not found.',
                         ]);
                     }
                 } else {
+
                     //client plan expire
                     return response()->json([
                         'success' => 0,
@@ -166,27 +171,21 @@ class ApiController extends Controller
 
     public function dashboard()
     {
-        if (Auth::check()) {
-            $user = Auth::user();
-            $today = now()->format('Y-m-d');
-            if ($user->expiry_date >= $today || $user->expiry_date == null) {
+        $user = Auth::guard('api')->user();
+        $today = now()->format('Y-m-d');
 
-                return response()->json([
-                    "success" => 1,
-                    "message" => "success",
-                    "client" =>  $user,
-                ]);
-            } else {
-                $user->tokens()->delete();
-                return response()->json([
-                    'success' => 0,
-                    'message' => 'Your plan is expired Please contact the admin.',
-                ]);
-            }
-        } else {
+        if ($user->expiry_date >= $today || $user->expiry_date == null) {
+
             return response()->json([
-                "success" => 101,
-                "message" => "please contact admin",
+                "success" => 1,
+                "message" => "success",
+                "client" =>  $user,
+            ]);
+        } else {
+            $user->tokens()->delete();
+            return response()->json([
+                'success' => 0,
+                'message' => 'Your plan is expired Please contact the admin.',
             ]);
         }
     }

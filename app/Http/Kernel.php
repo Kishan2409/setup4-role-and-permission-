@@ -70,5 +70,6 @@ class Kernel extends HttpKernel
         'permission' => \jeremykenedy\LaravelRoles\App\Http\Middleware\VerifyPermission::class,
         'level' => \jeremykenedy\LaravelRoles\App\Http\Middleware\VerifyLevel::class,
         'checkLoginType' => \App\Http\Middleware\CheckLoginType::class,
+        'verifyAccessToken' => \App\Http\Middleware\VerifyAccessToken::class,
     ];
 }

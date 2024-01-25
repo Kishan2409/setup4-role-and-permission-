@@ -19,6 +19,6 @@ use Illuminate\Support\Facades\Route;
 Route::post('checkclient', [ApiController::class, 'checkclient']);
 Route::post('userlogin', [ApiController::class, 'userlogin']);
 
-Route::group(['middleware' => ['auth:api', 'checkLoginType']], function () {
+Route::group(['middleware' => ['verifyAccessToken']], function () {
     Route::post('dashboard', [ApiController::class, 'dashboard']);
 });

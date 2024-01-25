@@ -2,13 +2,12 @@
 
 namespace App\Http\Middleware;
 
-use App\Models\Client;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 
-class CheckLoginType
+class VerifyAccessToken
 {
     /**
      * Handle an incoming request.
@@ -17,17 +16,14 @@ class CheckLoginType
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (Auth::check()) {
-
-            // $user = auth()->user();
-            // $client = Client::where('user_id', $user->added_by)->first();
-            // // dd($user);
-            // if ($client->login_type == 1) {
-            //     Auth::logoutOtherDevices($user->password);
-            //     return $next($request);
-            // }
+        // Verify the access token
+        if (Auth::guard('api')->check()) {
             return $next($request);
         }
-        return response()->json(['message' => 'Unauthorized.'], 401);
+        // Token is not valid, return unauthorized
+        return response()->json([
+            "error" => 0,
+            "message" => "Unauthorized",
+        ], 401);
     }
 }
